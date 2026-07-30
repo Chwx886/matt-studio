@@ -27,6 +27,14 @@ Pi discovers global skills under `~/.agents/skills/`. Start the router with:
 /skill:matt-studio
 ```
 
+In a configured repository with one active Wayfinder map, you can also say:
+
+```text
+continue the work
+```
+
+The router resumes that map directly without requiring another slash command.
+
 ## Repository layout
 
 ```text

@@ -1,11 +1,11 @@
 ---
 name: matt-studio
-description: Route any project through the Matt Pocock studio pipeline, including sizing discovery for grill-with-docs versus Wayfinder and sequencing specs, tracer tickets, implementation, and review. Use when the user says "matt studio" or wants the studio workflow for a new or existing project.
+description: Route any project through the Matt Pocock studio pipeline, including sizing discovery for grill-with-docs versus Wayfinder and sequencing specs, tracer tickets, implementation, and review. Use when the user says "matt studio," wants the studio workflow, or says "continue/resume the work" in a repository already configured for it.
 ---
 
 # Matt Studio Workflow
 
-Route a project through the shared Matt Pocock engineering skills. Most pipeline stages are user-invoked skills, so determine the current stage, do any safe preparation, and tell the user **exactly one command to type next**.
+Route a project through the shared Matt Pocock engineering skills. Most pipeline stages are user-invoked skills, so determine the current stage, do any safe preparation, and tell the user **exactly one command to type next** unless the natural-language resume rule applies.
 
 ## Command syntax
 
@@ -16,6 +16,15 @@ Render the next command for the active harness:
 - **Another harness:** use that harness's skill-command syntax. If it is unknown, name the skill rather than inventing a command.
 
 For example, setup is `/skill:setup-matt-pocock-skills` in Pi and `/mattpocock-studio:setup-matt-pocock-skills` in Claude Code.
+
+## Natural-language resume
+
+When the user says “continue the work,” “continue,” or “resume” without naming another target in a configured repository:
+
+1. Query the configured tracker for open issues labelled `wayfinder:map`.
+2. If exactly one exists, treat the phrase as explicit invocation of `wayfinder`: load that skill, load the map, and execute its **Work through the map** branch directly. Do not ask the user to type a slash command.
+3. If several maps exist, ask which named map to resume.
+4. If no map exists, route the current pipeline stage normally.
 
 ## Pipeline
 
@@ -54,6 +63,7 @@ Make decisions before `to-spec`; that skill synthesizes rather than explores.
 1. Inspect the repository and configured tracker to identify the current stage:
    - No `.git/`: initialize Git, then route to step 0.
    - No `docs/agents/issue-tracker.md`: route to step 0.
+   - An open `wayfinder:map` exists: resume it under the natural-language rule, or route to `wayfinder` with the named map when the user did not ask to resume directly.
    - Setup exists but no spec exists on the configured tracker: route to step 1.
    - A spec exists but tickets do not: route to step 3.
    - Open implementation tickets remain: route to step 4, followed by step 5 after each implementation cycle.
