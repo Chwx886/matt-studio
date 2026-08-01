@@ -1,0 +1,85 @@
+name: Customer feedback
+description: Capture sanitized feedback against a specific prototype, spec, or implementation baseline
+title: "[Customer feedback] "
+labels:
+  - "{{NEEDS_TRIAGE_LABEL}}"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include personal data, customer-identifying information, credentials, secrets, or confidential material. Summarize and sanitize feedback before submission.
+
+  - type: input
+    id: reviewer_context
+    attributes:
+      label: Reviewer context
+      description: Describe the reviewer's role without naming the person.
+      placeholder: Customer product stakeholder
+    validations:
+      required: true
+
+  - type: input
+    id: prototype_baseline
+    attributes:
+      label: Prototype baseline
+      description: Enter the exact prototype version, commit, or immutable artifact URL reviewed. Use N/A when no prototype was involved.
+      placeholder: v1.0 — commit abc123 or artifact URL
+    validations:
+      required: true
+
+  - type: input
+    id: spec_baseline
+    attributes:
+      label: Spec baseline
+      description: Link the governing spec and identify its revision. Use N/A when no spec exists yet.
+      placeholder: Spec issue URL — revision 1.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Sanitized feedback
+      description: Summarize what the reviewer found without personal or confidential information.
+      placeholder: The reviewer could not tell whether...
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected_experience
+    attributes:
+      label: Affected experience
+      description: Identify the screen, workflow, domain concept, or implementation behaviour involved.
+      placeholder: Onboarding — account setup to first-use guidance
+    validations:
+      required: true
+
+  - type: textarea
+    id: desired_outcome
+    attributes:
+      label: Desired outcome
+      description: Describe the outcome the reviewer wants without prescribing implementation unless necessary.
+      placeholder: The customer should understand why this information is requested before continuing.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: governed_impact
+    attributes:
+      label: Could this affect a governed concern?
+      description: Consider safety, security, privacy, compliance, accessibility, data handling, and any specialist review named by the project.
+      options:
+        - Unsure
+        - "Yes"
+        - "No"
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add links, timestamps, or screenshots with personal and confidential information removed.
+      placeholder: Optional
+    validations:
+      required: false

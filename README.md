@@ -2,14 +2,16 @@
 
 A reusable router skill for moving projects through the Matt Pocock engineering workflow:
 
-1. Repository setup
+1. Repository setup and customer-feedback hooks
 2. Operational preflight
 3. Discovery sized by decision fog (`grill-with-docs` or `wayfinder`)
-4. Integrated product specification
-5. End-to-end tracer tickets
-6. Ticket-by-ticket implementation and two-axis code review
+4. Portable customer-demo prototypes and review gates when customer-visible workflow/design is in scope
+5. Integrated product specification
+6. End-to-end tracer tickets
+7. Ticket-by-ticket implementation and two-axis code review
+8. Controlled feedback re-entry at the earliest invalidated stage
 
-The router keeps UI prototypes in discovery, treats frontend and backend as one product contract by default, and favors vertical implementation slices.
+The router keeps customer-demo prototypes in discovery, treats frontend and backend as one product contract by default, favors vertical implementation slices, and preserves unaffected approved work when feedback arrives later.
 
 ## Prerequisites
 
@@ -35,10 +37,28 @@ continue the work
 
 The router resumes that map directly without requiring another slash command.
 
+## Customer-demo prototypes
+
+For customer-visible products, Matt Studio can make one portable, self-contained clickable HTML file a late discovery gate. The artifact demonstrates every agreed screen and consequential branch with synthetic data, includes reviewer navigation, completes at least one customer review round, and becomes an exact versioned input to `to-spec`.
+
+## Customer-feedback hook
+
+Configured repositories can accept:
+
+```text
+process customer feedback <issue-or-URL>
+```
+
+The hook captures sanitized feedback, waits for Product Owner disposition, and re-enters at the earliest invalidated stage. Clear fixes can go directly to implementation; decision fog receives a focused Wayfinder map. Unaffected work is not replayed.
+
+Existing configured repositories are offered the hook as a migration the next time the router inspects them.
+
 ## Repository layout
 
 ```text
 skills/
 └── matt-studio/
-    └── SKILL.md
+    ├── SKILL.md
+    ├── assets/       # tracker intake and repo-policy seeds
+    └── references/   # customer-demo and hook setup branches
 ```
