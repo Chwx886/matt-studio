@@ -29,13 +29,28 @@ Pi discovers global skills under `~/.agents/skills/`. Start the router with:
 /skill:matt-studio
 ```
 
-In a configured repository with one active Wayfinder map, you can also say:
+## Continue Wayfinder work across sessions
+
+In a configured repository with one active Wayfinder map, start a fresh agent session and say:
 
 ```text
 continue the work
 ```
 
-The router resumes that map directly without requiring another slash command.
+The router distinguishes two situations:
+
+- If the authenticated tracker user has exactly one open, claimed child ticket, it resumes that in-progress ticket.
+- If that user has no claimed ticket, it lets Wayfinder select and claim the next frontier ticket normally.
+
+If several tickets are claimed, the router asks which named ticket to resume. It never takes over another collaborator's claim and does not change Wayfinder's own selection or resolution mechanism.
+
+Before ending a session midway through a ticket, say:
+
+```text
+checkpoint this ticket
+```
+
+The router records a compact checkpoint on the ticket and leaves it open and claimed. After a computer restart, a new session can reconstruct the work from the tracker and repository by saying `continue the work`; Pi's session-resume command is not required. Uncommitted work remains local to its checkout, so use a committed and pushed branch—with approval—when continuation must work from another machine.
 
 ## Customer-demo prototypes
 

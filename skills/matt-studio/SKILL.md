@@ -1,6 +1,6 @@
 ---
 name: matt-studio
-description: Route projects through the Matt Pocock studio pipeline, including discovery sizing, customer-demo prototype gates, feedback change control, specs, tracer tickets, implementation, and review. Use when the user says "matt studio," wants the studio workflow, says "continue/resume the work," asks for a customer-reviewable clickable prototype, or says "process customer feedback."
+description: Route projects through the Matt Pocock studio pipeline, including discovery sizing, customer-demo prototype gates, feedback change control, specs, tracer tickets, implementation, and review. Use when the user says "matt studio," wants the studio workflow, says "continue/resume the work," wants to pause or checkpoint an active Wayfinder ticket, asks for a customer-reviewable clickable prototype, or says "process customer feedback."
 ---
 
 # Matt Studio Workflow
@@ -17,14 +17,41 @@ Render the next command for the active harness:
 
 For example, setup is `/skill:setup-matt-pocock-skills` in Pi and `/mattpocock-studio:setup-matt-pocock-skills` in Claude Code.
 
-## Natural-language resume
+## Natural-language Wayfinder continuation
+
+This router adds ticket-aware continuation without changing Wayfinder's own frontier, claim, or resolution rules.
 
 When the user says “continue the work,” “continue,” or “resume” without naming another target in a configured repository:
 
 1. Query the configured tracker for open issues labelled `wayfinder:map`.
-2. If exactly one exists, treat the phrase as explicit invocation of `wayfinder`: load that skill, load the map, and execute its **Work through the map** branch directly. Do not ask the user to type a slash command.
-3. If several maps exist, ask which named map to resume.
-4. If no map exists, route the current pipeline stage normally.
+2. If no map exists, route the current pipeline stage normally. If several maps exist, ask which named map to resume, then apply the remaining steps within that map.
+3. For the selected map, identify the current driving developer from the configured tracker and query its open child tickets already claimed by that developer. On a hosted tracker, a claim is an assignment to the authenticated tracker user; with local Markdown, it is an open ticket whose status is `claimed`. Never take over a ticket assigned to another collaborator. If the current identity cannot be determined safely, ask rather than guessing.
+4. If exactly one claimed ticket exists:
+   - Load the ticket, its latest `## Work checkpoint` if present, linked artifacts, and the current repository state. A checkpoint improves fidelity but is not required; when none exists, reconstruct from durable tracker and repository evidence and state any uncertainty before changing work.
+   - If the ticket has gained an open blocker, name the blocker and ask whether to keep the ticket paused or release its claim; do not silently bypass the dependency.
+   - Otherwise treat the phrase as explicit invocation of `wayfinder` with the selected map **and that named ticket**, then execute its **Work through the map** branch directly. The existing claim remains valid.
+5. If several tickets are claimed by the current developer, ask which **named ticket** to resume.
+6. If no ticket is claimed by the current developer, treat the phrase as explicit invocation of `wayfinder` with the selected map and no ticket, then execute its **Work through the map** branch directly; Wayfinder selects and claims the next frontier ticket as usual.
+
+Do not ask for a slash command. Supplying a claimed ticket to Wayfinder resumes it; supplying only the map preserves Wayfinder's existing new-frontier mechanism.
+
+## Natural-language Wayfinder checkpoint
+
+When the user says “pause the work,” “stop for now,” or “checkpoint this ticket” while working a claimed Wayfinder ticket:
+
+1. Reach a safe boundary for the current tool or tracker operation, then load the claimed ticket and inspect repository state.
+2. Append a compact `## Work checkpoint` to the ticket's own comment/history containing:
+   - work completed since the claim;
+   - durable artifact pointers such as issue comments, paths, branches, or commits;
+   - current provisional state, without presenting it as a resolved decision;
+   - the exact next action;
+   - blockers or open questions.
+3. Reference existing artifacts rather than duplicating them, and exclude secrets, credentials, personal data, and confidential material.
+4. Keep the ticket open and claimed. Do not add it to the map's Decisions-so-far or use Wayfinder's resolution sequence.
+5. Ensure changed files are saved and report any uncommitted paths. Ask before committing or pushing; when continuation may happen from another checkout, make the artifacts durable only after that approval.
+6. Return the named ticket and map links and tell the user that a fresh session in the configured repository can say **“continue the work.”**
+
+The latest checkpoint is the handoff source for unfinished work. Wayfinder itself remains the source of truth for claiming and resolving tickets.
 
 ## Natural-language customer feedback
 
